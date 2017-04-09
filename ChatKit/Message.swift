@@ -11,8 +11,8 @@ import Foundation
 class Message: MessageProtocol {
 
 	var user: MessageUserProtocol
-	let content: MessageContentProtocol
-	var date: Date? = nil
+	var content: MessageContentProtocol
+	var date: Date = Date()
 	var isSystem: Bool = false
 	
 	init(_ user: MessageUserProtocol, _ content: MessageContentProtocol) {

@@ -34,6 +34,8 @@ public class ChatViewController: UIViewController {
 	let collectionVC = ChatCollectionViewController.viewController()
 	let chatBarVC = ChatBarViewController.viewController()
 	
+	private var isInitialLoad = true
+	
     override public func viewDidLoad() {
         super.viewDidLoad()
 		
@@ -45,14 +47,29 @@ public class ChatViewController: UIViewController {
 		collectionVC.chatVC = self
 		chatBarVC.chatVC = self
 		
-		NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(_:)), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
-		NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(_:)), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
-		NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillChangeFrame(_:)), name: NSNotification.Name.UIKeyboardWillChangeFrame, object: nil)
+		chatBarContainer.isUserInteractionEnabled = !ChatSettings.disableInput
     }
 	
 	public override func viewWillAppear(_ animated: Bool) {
 		super.viewWillAppear(animated)
-		self.collectionVC.scrollToBottom()
+		if isInitialLoad {
+			self.collectionVC.scrollToBottom()
+		}
+	}
+	
+	public override func viewDidAppear(_ animated: Bool) {
+		super.viewDidAppear(animated)
+		
+		NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(_:)), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
+		NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(_:)), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
+		NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillChangeFrame(_:)), name: NSNotification.Name.UIKeyboardWillChangeFrame, object: nil)
+		
+		isInitialLoad = false
+	}
+	
+	public override func viewWillDisappear(_ animated: Bool) {
+		super.viewWillDisappear(animated)
+		NotificationCenter.default.removeObserver(self)
 	}
 	
 	public func reloadChat(didReceiveNewMessage: Bool = false) {
@@ -70,6 +87,10 @@ public class ChatViewController: UIViewController {
 	
 	deinit {
 		NotificationCenter.default.removeObserver(self)
+	}
+	
+	public func showKeyboard() {
+		self.chatBarVC.textView.becomeFirstResponder()
 	}
 	
 }

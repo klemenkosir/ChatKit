@@ -126,7 +126,9 @@ class MessageCollectionViewCell: MessageCell {
 		switch message.content.contentType {
 		case .text:
 			handleTextContent(message.content)
+			break
 		case .image:
+			handleImageContent(message.content)
 			break
 		case .video:
 			break
@@ -136,8 +138,8 @@ class MessageCollectionViewCell: MessageCell {
 		
 		self.userView?.backgroundColor = ChatSettings.avatarStyle.backgroundColor
 		self.userView?.image = message.user.image
-		self.message.user.imageUpdateBlock = { [unowned self] (newImage) in
-				self.userView?.image = newImage
+		self.message.user.imageUpdateBlock = { [weak self] (newImage) in
+			self?.userView?.image = newImage
 		}
 	}
 	
@@ -147,11 +149,16 @@ class MessageCollectionViewCell: MessageCell {
 		
 		let text = content.content as! String
 		
+		if let imageView = bubbleView.viewWithTag(2) as? UIImageView {
+			imageView.removeFromSuperview()
+		}
+		
 		if let textView = bubbleView.viewWithTag(1) as? UITextView {
 			textView.text = text
 		}
 		else {
 			cleanupBubble()
+			self.bubbleView.backgroundColor = bubbleStyle.bacgroundColor
 			
 			let textView = UITextView()
 			textView.tag = 1
@@ -160,18 +167,82 @@ class MessageCollectionViewCell: MessageCell {
 			textView.font = ChatSettings.messageFont
 			textView.textColor = bubbleStyle.textColor
 			textView.textContainerInset = bubbleStyle.textContainerInset
-			textView.translatesAutoresizingMaskIntoConstraints = false
+//			textView.translatesAutoresizingMaskIntoConstraints = false
 			textView.isScrollEnabled = false
 			textView.showsVerticalScrollIndicator = false
 			textView.showsHorizontalScrollIndicator = false
 			textView.isEditable = false
 			textView.dataDetectorTypes = .all
-			textView.tintColor = .white
+			textView.tintColor = bubbleStyle.textColor
 			self.bubbleView.addSubview(textView)
 			
+			textView.frame = ChatCollectionViewController.instance.calculateTextViewRect(forMessage: message)
+			
 			//constraints
-			self.bubbleView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[textView]|", options: .directionLeadingToTrailing, metrics: nil, views: ["textView" : textView]))
-			self.bubbleView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[textView]|", options: .directionLeadingToTrailing, metrics: nil, views: ["textView" : textView]))
+//			self.bubbleView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[textView]|", options: .directionLeadingToTrailing, metrics: nil, views: ["textView" : textView]))
+//			self.bubbleView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[textView]|", options: .directionLeadingToTrailing, metrics: nil, views: ["textView" : textView]))
+		}
+	}
+	
+	private func handleImageContent(_ content: MessageContentProtocol) {
+		
+		let bubbleStyle = self.reuseIdentifier!.contains("received") ? ChatSettings.receivedbubbleStyle : ChatSettings.sentbubbleStyle
+		
+		if let textView = bubbleView.viewWithTag(1) as? UITextView {
+			textView.removeFromSuperview()
+		}
+		
+		if let imageView = bubbleView.viewWithTag(2) as? UIImageView {
+			if let image = content.content as? UIImage {
+				imageView.image = image
+				self.bubbleView.removeConstraints(self.bubbleView.constraints(withIdentifier: "aspectConstraint"))
+				let aspectConstraint = NSLayoutConstraint(item: imageView, attribute: .width, relatedBy: .equal, toItem: imageView, attribute: .height, multiplier: image.size.width/image.size.height, constant: 0.0)
+				aspectConstraint.identifier = "aspectConstraint"
+				self.bubbleView.addConstraint(aspectConstraint)
+			}
+		}
+		else {
+			cleanupBubble()
+//			self.bubbleView.backgroundColor = .clear
+			
+			let imageView = UIImageView()
+			imageView.tag = 2
+			imageView.layer.cornerRadius = bubbleStyle.cornerRadius
+			imageView.clipToBounds = true
+			imageView.contentMode = .scaleAspectFit
+			imageView.translatesAutoresizingMaskIntoConstraints = false
+			self.bubbleView.addSubview(imageView)
+			
+			let activityIndicator = UIActivityIndicatorView(activityIndicatorStyle: .gray)
+			activityIndicator.translatesAutoresizingMaskIntoConstraints = false
+			imageView.addSubview(activityIndicator)
+			imageView.addConstraint(NSLayoutConstraint(item: activityIndicator, attribute: .centerX, relatedBy: .equal, toItem: imageView, attribute: .centerX, multiplier: 1.0, constant: 0.0))
+			imageView.addConstraint(NSLayoutConstraint(item: activityIndicator, attribute: .centerY, relatedBy: .equal, toItem: imageView, attribute: .centerY, multiplier: 1.0, constant: 0.0))
+			
+			//constraints
+			self.bubbleView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[imageView]|", options: .directionLeadingToTrailing, metrics: nil, views: ["imageView" : imageView]))
+			self.bubbleView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[imageView]|", options: .directionLeadingToTrailing, metrics: nil, views: ["imageView" : imageView]))
+			let aspectConstraint = NSLayoutConstraint(item: imageView, attribute: .width, relatedBy: .equal, toItem: imageView, attribute: .height, multiplier: 1.0, constant: 0.0)
+			aspectConstraint.identifier = "aspectConstraint"
+			self.bubbleView.addConstraint(aspectConstraint)
+		}
+		
+		content.contentUpdate = { [weak self] (updatedContent) in
+			content.content = updatedContent
+			if let imageView = self?.bubbleView.viewWithTag(2) as? UIImageView {
+				DispatchQueue.main.async {
+					if let image = updatedContent as? UIImage {
+						imageView.image = image
+						imageView.removeAllSubviews()
+						if let prevAspectConstraints = self?.bubbleView.constraints(withIdentifier: "aspectConstraint") {
+							self?.bubbleView.removeConstraints(prevAspectConstraints)
+						}
+						let aspectConstraint = NSLayoutConstraint(item: imageView, attribute: .width, relatedBy: .equal, toItem: imageView, attribute: .height, multiplier: image.size.width/image.size.height, constant: 0.0)
+						aspectConstraint.identifier = "aspectConstraint"
+						self?.bubbleView.addConstraint(aspectConstraint)
+					}
+				}
+			}
 		}
 	}
 	
@@ -184,7 +255,6 @@ class MessageCollectionViewCell: MessageCell {
 extension MessageProtocol {
 	
 	var timeString: String {
-		guard let date = date else { return "" }
 		if date.isToday() {
 			return date.toString(format: .custom("H:mm"))
 		}
@@ -192,9 +262,9 @@ extension MessageProtocol {
 			return date.toString(format: .custom("EEE H:mm"))
 		}
 		if date.isThisYear() {
-			return date.toString(format: .custom("d.MMM"))
+			return date.toString(format: .custom("d.MMM H:mm"))
 		}
-		return date.toString(format: .custom("H:mm d.M.yyyy"))
+		return date.toString(format: .custom("d.M.yyyy H:mm"))
 	}
 	
 }

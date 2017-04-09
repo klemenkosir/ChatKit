@@ -11,8 +11,9 @@ import Foundation
 class MessageContent: MessageContentProtocol {
 	
 	let contentType: MessageContentType
-	let content: Any
+	var content: Any?
 	var contentExtras: Any? = nil
+	var contentUpdate: ContentUpdateBlock? = nil
 	
 	init(_ contentType: MessageContentType, _ content: Any) {
 		self.contentType = contentType

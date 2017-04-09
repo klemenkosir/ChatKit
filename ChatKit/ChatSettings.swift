@@ -13,6 +13,9 @@ public enum ChatSettings {
 	public static var messageFont: UIFont?
 	public static var systemMessageTextColor: UIColor = .black
 	public static var backgroundColor: UIColor = .white
+	public static var usesPagination: Bool = true
+	public static var pageSize: Int = 50
+	public static var disableInput = false
 	
 	public static var avatarStyle = ChatAvatarStyle()
 	public static var receivedbubbleStyle = ChatBubbleStyle()

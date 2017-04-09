@@ -63,6 +63,10 @@ public class ChatBarViewController: UIViewController {
 		chatVC.view.layoutIfNeeded()
 	}
 	
+//	public override func viewDidAppear(_ animated: Bool) {
+//		super.viewDidAppear(animated)
+//	}
+	
 	fileprivate func createMessage() -> MessageProtocol? {
 		guard let senderUser = ChatSettings.senderUser else { return nil }
 		let user = MessageUser(senderUser.id)
@@ -125,6 +129,7 @@ extension ChatBarViewController {
 		textView.text = ""
 		showPlaceholderIfNeeded()
 		updateTextViewHeight()
+		enableSendButtonIfNeeded()
 		delegate.chat(send: message)
 	}
 	
