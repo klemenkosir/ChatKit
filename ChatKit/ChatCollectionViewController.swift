@@ -48,7 +48,9 @@ public class ChatCollectionViewController: UIViewController {
 	func scrollToBottom(animated: Bool = false, indexOffset: Int = 0) {
 		let numberOfItems = collectionView.numberOfItems(inSection: 0) + indexOffset
 		if numberOfItems > 0 {
-			collectionView.scrollToItem(at: IndexPath(item: numberOfItems-1, section: 0), at: .bottom, animated: animated)
+			DispatchQueue.main.async {
+				self.collectionView.scrollToItem(at: IndexPath(item: numberOfItems-1, section: 0), at: .bottom, animated: animated)
+			}
 		}
 	}
 	
@@ -100,7 +102,7 @@ public class ChatCollectionViewController: UIViewController {
 		                                           context: nil)
 		
 		//add contentInset
-		contentRect = contentRect.insetBy(dx: -(bubbleStyle.textContainerInset.left + bubbleStyle.textContainerInset.right)/2.0,
+		contentRect = contentRect.insetBy(dx: -(bubbleStyle.textContainerInset.left + bubbleStyle.textContainerInset.right),
 		                                  dy: -(bubbleStyle.textContainerInset.top + bubbleStyle.textContainerInset.bottom)/2.0)
 		
 		contentRect.origin = .zero

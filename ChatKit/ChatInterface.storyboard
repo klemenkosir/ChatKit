@@ -28,7 +28,7 @@
                             <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="WIY-hd-eRZ">
                                 <rect key="frame" x="0.0" y="587" width="375" height="80"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="80" id="bHd-1Z-jQC"/>
+                                    <constraint firstAttribute="height" relation="greaterThanOrEqual" id="bHd-1Z-jQC"/>
                                     <constraint firstAttribute="height" priority="100" constant="80" id="oE2-r6-8Rl"/>
                                 </constraints>
                             </containerView>
@@ -73,7 +73,7 @@
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="DUB-hO-MgN">
                                 <rect key="frame" x="0.0" y="0.0" width="315" height="80"/>
                                 <subviews>
-                                    <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="sTV-hA-WdI">
+                                    <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" translatesAutoresizingMaskIntoConstraints="NO" id="sTV-hA-WdI">
                                         <rect key="frame" x="8" y="22" width="307" height="37"/>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                         <constraints>
@@ -85,7 +85,7 @@
                                             <outlet property="delegate" destination="OGy-Qd-UVP" id="eGI-pc-q3s"/>
                                         </connections>
                                     </textView>
-                                    <textView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" bounces="NO" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" editable="NO" text="Type message" textAlignment="natural" selectable="NO" translatesAutoresizingMaskIntoConstraints="NO" id="nPP-zp-OjJ">
+                                    <textView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" bounces="NO" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" editable="NO" text="Type message" selectable="NO" translatesAutoresizingMaskIntoConstraints="NO" id="nPP-zp-OjJ">
                                         <rect key="frame" x="8" y="22" width="307" height="37"/>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                         <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
@@ -194,7 +194,7 @@
                                                             <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                                             <constraints>
                                                                 <constraint firstAttribute="height" priority="100" constant="94" id="7Oh-p9-2Rw"/>
-                                                                <constraint firstAttribute="width" priority="100" constant="295" id="9eS-KS-Ov1"/>
+                                                                <constraint firstAttribute="width" priority="260" constant="295" id="9eS-KS-Ov1"/>
                                                             </constraints>
                                                         </view>
                                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="1000" verticalCompressionResistancePriority="1000" text="0:00" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="YE5-tj-IZ2">
@@ -210,7 +210,6 @@
                                                         <constraint firstItem="eVO-bM-USg" firstAttribute="leading" secondItem="0Wf-Kh-SuD" secondAttribute="leading" constant="8" id="NI6-nU-p1w"/>
                                                         <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="J9K-6f-hgf" secondAttribute="bottom" constant="8" id="Of5-9P-6OE"/>
                                                         <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="YE5-tj-IZ2" secondAttribute="bottom" constant="8" id="d3W-9x-iOZ"/>
-                                                        <constraint firstItem="YE5-tj-IZ2" firstAttribute="trailing" relation="lessThanOrEqual" secondItem="J9K-6f-hgf" secondAttribute="trailing" priority="100" id="hB3-AD-ItW"/>
                                                         <constraint firstItem="YE5-tj-IZ2" firstAttribute="top" secondItem="J9K-6f-hgf" secondAttribute="bottom" constant="4" id="ha0-1P-3K4"/>
                                                         <constraint firstItem="YE5-tj-IZ2" firstAttribute="leading" secondItem="J9K-6f-hgf" secondAttribute="leading" constant="4" id="jG5-e0-oX1"/>
                                                         <constraint firstItem="J9K-6f-hgf" firstAttribute="top" secondItem="0Wf-Kh-SuD" secondAttribute="top" constant="8" id="k4m-gU-20h"/>
@@ -249,7 +248,7 @@
                                                             <rect key="frame" x="35" y="8" width="264" height="69"/>
                                                             <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                                             <constraints>
-                                                                <constraint firstAttribute="width" priority="100" constant="295" id="aBO-D7-TSM"/>
+                                                                <constraint firstAttribute="width" priority="260" constant="295" id="aBO-D7-TSM"/>
                                                                 <constraint firstAttribute="height" priority="100" constant="94" id="w9y-1J-eUg"/>
                                                             </constraints>
                                                         </view>

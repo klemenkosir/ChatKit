@@ -38,11 +38,11 @@ public class ChatViewController: UIViewController {
 	
     override public func viewDidLoad() {
         super.viewDidLoad()
-		
-		chatBarContainerHeightConstraint.constant = ChatSettings.chatBarStyle.height
 
 		collectionViewContainer.addSubviewFromViewController(collectionVC, useAutoLayout: true)
 		chatBarContainer.addSubviewFromViewController(chatBarVC, useAutoLayout: true)
+		
+		chatBarContainerHeightConstraint.constant = ChatSettings.chatBarStyle.height
 		
 		collectionVC.chatVC = self
 		chatBarVC.chatVC = self
@@ -67,8 +67,8 @@ public class ChatViewController: UIViewController {
 		isInitialLoad = false
 	}
 	
-	public override func viewWillDisappear(_ animated: Bool) {
-		super.viewWillDisappear(animated)
+	public override func viewDidDisappear(_ animated: Bool) {
+		super.viewDidDisappear(animated)
 		NotificationCenter.default.removeObserver(self)
 	}
 	

@@ -41,7 +41,9 @@ public class ChatBarViewController: UIViewController {
 		}
 		
 		textView.textContainerInset = .zero
+		textView.contentInset = .zero
 		textView.autocorrectionType = .no
+		textView.textContainer.lineBreakMode = .byWordWrapping
 		placeholderTextView.textContainerInset = .zero
 		
 		sendButton.isUserInteractionEnabled = false
@@ -60,7 +62,7 @@ public class ChatBarViewController: UIViewController {
 	public override func viewWillAppear(_ animated: Bool) {
 		super.viewWillAppear(animated)
 		textViewHeightConstraint.constant = textView.intrinsicContentSize.height
-		chatVC.view.layoutIfNeeded()
+//		chatVC.view.layoutIfNeeded()
 	}
 	
 //	public override func viewDidAppear(_ animated: Bool) {
@@ -101,8 +103,8 @@ public class ChatBarViewController: UIViewController {
 	}
 	
 	fileprivate func updateTextViewHeight() {
-		let textHeight = textView.textStorage.size().height
-		let placeholderHeight = placeholderTextView.textStorage.size().height
+		let textHeight = textView.textContentSize.height
+		let placeholderHeight = placeholderTextView.textContentSize.height
 		var newHeight = textHeight + 2.0
 		if newHeight > 120.0 {
 			newHeight = 120.0
@@ -175,6 +177,14 @@ extension ChatBarViewController: UITextViewDelegate {
 	
 	fileprivate func showPlaceholderIfNeeded(_ text: String = "") {
 		placeholderTextView.isHidden = !(textView.text.characters.isEmpty && text.characters.isEmpty)
+	}
+	
+}
+
+extension UITextView {
+	
+	var textContentSize: CGSize {
+		return self.attributedText.boundingRect(with: CGSize(width: self.bounds.size.width - 10.0, height: CGFloat.greatestFiniteMagnitude), options: [NSStringDrawingOptions.usesLineFragmentOrigin], context: nil).size
 	}
 	
 }

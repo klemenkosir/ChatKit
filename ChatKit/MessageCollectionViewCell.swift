@@ -155,6 +155,7 @@ class MessageCollectionViewCell: MessageCell {
 		
 		if let textView = bubbleView.viewWithTag(1) as? UITextView {
 			textView.text = text
+			textView.frame = ChatCollectionViewController.instance.calculateTextViewRect(forMessage: message)
 		}
 		else {
 			cleanupBubble()
@@ -167,6 +168,7 @@ class MessageCollectionViewCell: MessageCell {
 			textView.font = ChatSettings.messageFont
 			textView.textColor = bubbleStyle.textColor
 			textView.textContainerInset = bubbleStyle.textContainerInset
+			textView.frame = ChatCollectionViewController.instance.calculateTextViewRect(forMessage: message)
 //			textView.translatesAutoresizingMaskIntoConstraints = false
 			textView.isScrollEnabled = false
 			textView.showsVerticalScrollIndicator = false
@@ -176,12 +178,11 @@ class MessageCollectionViewCell: MessageCell {
 			textView.tintColor = bubbleStyle.textColor
 			self.bubbleView.addSubview(textView)
 			
-			textView.frame = ChatCollectionViewController.instance.calculateTextViewRect(forMessage: message)
-			
 			//constraints
-//			self.bubbleView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[textView]|", options: .directionLeadingToTrailing, metrics: nil, views: ["textView" : textView]))
-//			self.bubbleView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[textView]|", options: .directionLeadingToTrailing, metrics: nil, views: ["textView" : textView]))
+			self.bubbleView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[textView]|", options: .directionLeadingToTrailing, metrics: nil, views: ["textView" : textView]))
+			self.bubbleView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[textView]|", options: .directionLeadingToTrailing, metrics: nil, views: ["textView" : textView]))
 		}
+		
 	}
 	
 	private func handleImageContent(_ content: MessageContentProtocol) {
@@ -200,6 +201,18 @@ class MessageCollectionViewCell: MessageCell {
 				aspectConstraint.identifier = "aspectConstraint"
 				self.bubbleView.addConstraint(aspectConstraint)
 			}
+			else if let activityIndicator = imageView.viewWithTag(3) as? UIActivityIndicatorView {
+				activityIndicator.startAnimating()
+			}
+			else {
+				let activityIndicator = UIActivityIndicatorView(activityIndicatorStyle: .gray)
+				activityIndicator.startAnimating()
+				activityIndicator.tag = 3
+				activityIndicator.translatesAutoresizingMaskIntoConstraints = false
+				imageView.addSubview(activityIndicator)
+				imageView.addConstraint(NSLayoutConstraint(item: activityIndicator, attribute: .centerX, relatedBy: .equal, toItem: imageView, attribute: .centerX, multiplier: 1.0, constant: 0.0))
+				imageView.addConstraint(NSLayoutConstraint(item: activityIndicator, attribute: .centerY, relatedBy: .equal, toItem: imageView, attribute: .centerY, multiplier: 1.0, constant: 0.0))
+			}
 		}
 		else {
 			cleanupBubble()
@@ -214,6 +227,8 @@ class MessageCollectionViewCell: MessageCell {
 			self.bubbleView.addSubview(imageView)
 			
 			let activityIndicator = UIActivityIndicatorView(activityIndicatorStyle: .gray)
+			activityIndicator.startAnimating()
+			activityIndicator.tag = 3
 			activityIndicator.translatesAutoresizingMaskIntoConstraints = false
 			imageView.addSubview(activityIndicator)
 			imageView.addConstraint(NSLayoutConstraint(item: activityIndicator, attribute: .centerX, relatedBy: .equal, toItem: imageView, attribute: .centerX, multiplier: 1.0, constant: 0.0))
@@ -240,6 +255,7 @@ class MessageCollectionViewCell: MessageCell {
 						let aspectConstraint = NSLayoutConstraint(item: imageView, attribute: .width, relatedBy: .equal, toItem: imageView, attribute: .height, multiplier: image.size.width/image.size.height, constant: 0.0)
 						aspectConstraint.identifier = "aspectConstraint"
 						self?.bubbleView.addConstraint(aspectConstraint)
+						imageView.viewWithTag(3)?.removeFromSuperview()
 					}
 				}
 			}
@@ -262,7 +278,7 @@ extension MessageProtocol {
 			return date.toString(format: .custom("EEE H:mm"))
 		}
 		if date.isThisYear() {
-			return date.toString(format: .custom("d.MMM H:mm"))
+			return date.toString(format: .custom("d. MMM H:mm"))
 		}
 		return date.toString(format: .custom("d.M.yyyy H:mm"))
 	}

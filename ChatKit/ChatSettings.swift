@@ -10,7 +10,7 @@ import Foundation
 
 public enum ChatSettings {
 	
-	public static var messageFont: UIFont?
+	public static var messageFont: UIFont = UIFont.systemFont(ofSize: 14.0)
 	public static var systemMessageTextColor: UIColor = .black
 	public static var backgroundColor: UIColor = .white
 	public static var usesPagination: Bool = true
