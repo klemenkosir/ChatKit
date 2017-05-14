@@ -34,10 +34,16 @@ public class ChatViewController: UIViewController {
 	let collectionVC = ChatCollectionViewController.viewController()
 	let chatBarVC = ChatBarViewController.viewController()
 	
-	private var isInitialLoad = true
+	fileprivate var isInitialLoad = true
+	fileprivate var shouldShowKeyboardWOAnimation = true
+	fileprivate var wasKeyboardVisible = false
 	
     override public func viewDidLoad() {
         super.viewDidLoad()
+		
+		NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(_:)), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
+		NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(_:)), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
+		NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillChangeFrame(_:)), name: NSNotification.Name.UIKeyboardWillChangeFrame, object: nil)
 
 		collectionViewContainer.addSubviewFromViewController(collectionVC, useAutoLayout: true)
 		chatBarContainer.addSubviewFromViewController(chatBarVC, useAutoLayout: true)
@@ -55,21 +61,24 @@ public class ChatViewController: UIViewController {
 		if isInitialLoad {
 			self.collectionVC.scrollToBottom()
 		}
+		if wasKeyboardVisible {
+			self.chatBarVC.showKeyboard()
+		}
+		else {
+			chatBarBottomConstraint.constant = 0.0
+		}
 	}
 	
 	public override func viewDidAppear(_ animated: Bool) {
 		super.viewDidAppear(animated)
-		
-		NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(_:)), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
-		NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(_:)), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
-		NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillChangeFrame(_:)), name: NSNotification.Name.UIKeyboardWillChangeFrame, object: nil)
-		
 		isInitialLoad = false
+		shouldShowKeyboardWOAnimation = false
 	}
 	
-	public override func viewDidDisappear(_ animated: Bool) {
-		super.viewDidDisappear(animated)
-		NotificationCenter.default.removeObserver(self)
+	public override func viewWillDisappear(_ animated: Bool) {
+		super.viewWillDisappear(animated)
+		shouldShowKeyboardWOAnimation = true
+		wasKeyboardVisible = self.chatBarVC.textView.isFirstResponder
 	}
 	
 	public func reloadChat(didReceiveNewMessage: Bool = false) {
@@ -90,7 +99,11 @@ public class ChatViewController: UIViewController {
 	}
 	
 	public func showKeyboard() {
-		self.chatBarVC.textView.becomeFirstResponder()
+		self.chatBarVC.showKeyboard()
+	}
+	
+	public func hideKeyboard() {
+		self.chatBarVC.hideKeyboard()
 	}
 	
 }
@@ -102,12 +115,15 @@ extension ChatViewController {
 		let keyboardFrame = (info[UIKeyboardFrameEndUserInfoKey] as! NSValue).cgRectValue
 		
 		chatBarBottomConstraint.constant = keyboardFrame.size.height
-		self.view.layoutIfNeeded()
+		if !shouldShowKeyboardWOAnimation {
+			self.view.layoutIfNeeded()
+		}
 		
 		collectionVC.scrollToBottom(animated: true)
 	}
 	
 	func keyboardWillChangeFrame(_ notification: Notification) {
+		guard !shouldShowKeyboardWOAnimation else { return }
 		let info = notification.userInfo!
 		let keyboardFrame = (info[UIKeyboardFrameEndUserInfoKey] as! NSValue).cgRectValue
 		
@@ -116,6 +132,7 @@ extension ChatViewController {
 	}
 	
 	func keyboardWillHide(_ notificaion: Notification) {
+		guard !shouldShowKeyboardWOAnimation else { return }
 		chatBarBottomConstraint.constant = 0.0
 		self.view.layoutIfNeeded()
 	}

@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="12118" systemVersion="16E195" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="S5S-9N-tp7">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="12120" systemVersion="16E195" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="S5S-9N-tp7">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12086"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12088"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -71,10 +71,10 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="DUB-hO-MgN">
-                                <rect key="frame" x="0.0" y="0.0" width="315" height="80"/>
+                                <rect key="frame" x="48" y="0.0" width="267" height="80"/>
                                 <subviews>
                                     <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" translatesAutoresizingMaskIntoConstraints="NO" id="sTV-hA-WdI">
-                                        <rect key="frame" x="8" y="22" width="307" height="37"/>
+                                        <rect key="frame" x="8" y="22" width="259" height="37"/>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="36.5" id="wMG-I7-4qH"/>
@@ -86,7 +86,7 @@
                                         </connections>
                                     </textView>
                                     <textView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" bounces="NO" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" editable="NO" text="Type message" selectable="NO" translatesAutoresizingMaskIntoConstraints="NO" id="nPP-zp-OjJ">
-                                        <rect key="frame" x="8" y="22" width="307" height="37"/>
+                                        <rect key="frame" x="8" y="22" width="259" height="37"/>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                         <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
@@ -109,6 +109,18 @@
                                     <constraint firstItem="nPP-zp-OjJ" firstAttribute="leading" secondItem="sTV-hA-WdI" secondAttribute="leading" id="rAK-RO-3nV"/>
                                 </constraints>
                             </view>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="r90-zC-pwq">
+                                <rect key="frame" x="0.0" y="0.0" width="60" height="80"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="60" id="tel-Nx-10W"/>
+                                </constraints>
+                                <state key="normal" title="ATT">
+                                    <color key="titleColor" red="0.41960784309999999" green="0.72941176470000002" blue="0.65098039220000004" alpha="1" colorSpace="calibratedRGB"/>
+                                </state>
+                                <connections>
+                                    <action selector="actionButtonHandler:" destination="OGy-Qd-UVP" eventType="touchUpInside" id="2Je-d9-hbX"/>
+                                </connections>
+                            </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ExJ-FN-GHm">
                                 <rect key="frame" x="315" y="0.0" width="60" height="80"/>
                                 <constraints>
@@ -123,13 +135,17 @@
                             </button>
                         </subviews>
                         <constraints>
-                            <constraint firstItem="DUB-hO-MgN" firstAttribute="leading" secondItem="S9C-qd-7wn" secondAttribute="leading" id="BgK-vo-e3c"/>
+                            <constraint firstItem="V17-hI-BhL" firstAttribute="top" secondItem="r90-zC-pwq" secondAttribute="bottom" id="EBd-sw-ptK"/>
+                            <constraint firstItem="DUB-hO-MgN" firstAttribute="leading" secondItem="r90-zC-pwq" secondAttribute="trailing" constant="-12" id="Ftb-hJ-uC4"/>
                             <constraint firstAttribute="trailing" secondItem="ExJ-FN-GHm" secondAttribute="trailing" id="HI0-eV-XES"/>
                             <constraint firstAttribute="bottom" secondItem="DUB-hO-MgN" secondAttribute="bottom" id="IuP-Hq-7JW"/>
                             <constraint firstAttribute="bottom" secondItem="ExJ-FN-GHm" secondAttribute="bottom" id="bxa-Uj-ULk"/>
+                            <constraint firstItem="DUB-hO-MgN" firstAttribute="leading" secondItem="S9C-qd-7wn" secondAttribute="leading" priority="500" id="dqd-7R-gjr"/>
                             <constraint firstItem="ExJ-FN-GHm" firstAttribute="top" secondItem="S9C-qd-7wn" secondAttribute="top" id="pex-ga-aLd"/>
+                            <constraint firstItem="r90-zC-pwq" firstAttribute="top" secondItem="0Qh-U6-Rzt" secondAttribute="bottom" id="qkO-dQ-yw0"/>
                             <constraint firstItem="ExJ-FN-GHm" firstAttribute="leading" secondItem="DUB-hO-MgN" secondAttribute="trailing" id="tTD-70-8AJ"/>
                             <constraint firstItem="DUB-hO-MgN" firstAttribute="top" secondItem="S9C-qd-7wn" secondAttribute="top" id="tr9-6z-mm7"/>
+                            <constraint firstItem="r90-zC-pwq" firstAttribute="leading" secondItem="S9C-qd-7wn" secondAttribute="leading" id="v1L-rf-c54"/>
                         </constraints>
                     </view>
                     <nil key="simulatedStatusBarMetrics"/>
@@ -138,6 +154,7 @@
                     <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
                     <size key="freeformSize" width="375" height="80"/>
                     <connections>
+                        <outlet property="actionButton" destination="r90-zC-pwq" id="WXS-Yg-xH2"/>
                         <outlet property="placeholderTextView" destination="nPP-zp-OjJ" id="9Fn-xU-4LQ"/>
                         <outlet property="sendButton" destination="ExJ-FN-GHm" id="Kje-nH-Vyf"/>
                         <outlet property="textView" destination="sTV-hA-WdI" id="jji-qD-rWT"/>
@@ -161,7 +178,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" keyboardDismissMode="interactive" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="EIm-eq-LhM">
+                            <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="EIm-eq-LhM">
                                 <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="0.0" minimumInteritemSpacing="0.0" id="XIg-Ng-orm">
@@ -377,21 +394,31 @@
                             </collectionView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <gestureRecognizers/>
                         <constraints>
                             <constraint firstItem="EIm-eq-LhM" firstAttribute="leading" secondItem="dxx-1b-ZGI" secondAttribute="leading" id="9eC-da-Pdw"/>
                             <constraint firstItem="EIm-eq-LhM" firstAttribute="top" secondItem="dxx-1b-ZGI" secondAttribute="top" id="S9O-Sy-xuM"/>
                             <constraint firstAttribute="bottom" secondItem="EIm-eq-LhM" secondAttribute="bottom" id="ba4-y9-q2n"/>
                             <constraint firstAttribute="trailing" secondItem="EIm-eq-LhM" secondAttribute="trailing" id="ekw-xk-Ozt"/>
                         </constraints>
+                        <connections>
+                            <outletCollection property="gestureRecognizers" destination="JhH-yi-f1o" appends="YES" id="vhW-ZC-XAb"/>
+                        </connections>
                     </view>
                     <nil key="simulatedStatusBarMetrics"/>
                     <nil key="simulatedTopBarMetrics"/>
                     <nil key="simulatedBottomBarMetrics"/>
                     <connections>
                         <outlet property="collectionView" destination="EIm-eq-LhM" id="lf5-9t-0HZ"/>
+                        <outlet property="tapGesture" destination="JhH-yi-f1o" id="TaN-qs-7P7"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="v8a-H5-LLN" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <tapGestureRecognizer id="JhH-yi-f1o">
+                    <connections>
+                        <action selector="tapGestureHandler:" destination="hwg-ev-BRt" id="Xxt-mz-Ef2"/>
+                    </connections>
+                </tapGestureRecognizer>
             </objects>
             <point key="canvasLocation" x="21.600000000000001" y="127.28635682158921"/>
         </scene>

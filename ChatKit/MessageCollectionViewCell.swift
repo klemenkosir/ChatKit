@@ -51,6 +51,8 @@ class MessageCollectionViewCell: MessageCell {
 		let userTapGesture = UITapGestureRecognizer(target: self, action: #selector(userTapHandler(_:)))
 		self.userView.addGestureRecognizer(userTapGesture)
 		
+		let contentTapGesture = UITapGestureRecognizer(target: self, action: #selector(contentTapHandler(_:)))
+		self.bubbleView.addGestureRecognizer(contentTapGesture)
 		
 		//bubble
 		let bubbleStyle = self.reuseIdentifier!.contains("received") ? ChatSettings.receivedbubbleStyle : ChatSettings.sentbubbleStyle
@@ -175,7 +177,7 @@ class MessageCollectionViewCell: MessageCell {
 			textView.showsHorizontalScrollIndicator = false
 			textView.isEditable = false
 			textView.dataDetectorTypes = .all
-			textView.tintColor = bubbleStyle.textColor
+//			textView.tintColor = bubbleStyle.textColor
 			self.bubbleView.addSubview(textView)
 			
 			//constraints
@@ -264,6 +266,10 @@ class MessageCollectionViewCell: MessageCell {
 	
 	func userTapHandler(_ gesture: UITapGestureRecognizer) {
 		delegate?.chat(didSelectAvatar: message)
+	}
+	
+	func contentTapHandler(_ gesture: UITapGestureRecognizer) {
+		delegate?.chat(didSelectContent: message)
 	}
 	
 }

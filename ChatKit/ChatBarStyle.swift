@@ -31,6 +31,12 @@ public struct ChatBarStyle {
 	//placeholder text
 	public var placeholderText: String = "Type message"
 	
+	//action button
+	public var actionButtonVisible: Bool = false
+	public var actionButtonImage: UIImage?
+	public var actionButtonImageDisabled: UIImage?
+	public var actionButtonText: String = "ACT"
+	
 	public init() {}
 	
 }

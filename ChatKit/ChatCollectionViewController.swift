@@ -17,6 +17,7 @@ public class ChatCollectionViewController: UIViewController {
 	static weak var instance: ChatCollectionViewController!
 	
 	@IBOutlet weak var collectionView: UICollectionView!
+	@IBOutlet var tapGesture: UITapGestureRecognizer!
 	
 	weak var dataSource: ChatDataSource?
 	weak var delegate: ChatDelegate?
@@ -29,6 +30,7 @@ public class ChatCollectionViewController: UIViewController {
 	var hasMorePages: Bool {
 		return dataSource?.hasMorePages ?? false
 	}
+	fileprivate var isInitialLoad = true
 	
 	fileprivate var hasLatestMessages: Bool {
 		return dataSource?.hasLatestMessages == true
@@ -38,11 +40,22 @@ public class ChatCollectionViewController: UIViewController {
 		super.viewDidLoad()
 		ChatCollectionViewController.instance = self
 		
+		tapGesture.cancelsTouchesInView = true
+		
 		self.view.backgroundColor = ChatSettings.backgroundColor
 		self.collectionView.backgroundColor = ChatSettings.backgroundColor
 		self.collectionView.scrollsToTop = false
 		
 		self.collectionView.contentInset = UIEdgeInsetsMake(16.0, 0.0, 16.0, 0.0)
+	}
+	
+	public override func viewDidAppear(_ animated: Bool) {
+		super.viewDidAppear(animated)
+//		isInitialLoad = false
+	}
+	
+	@IBAction func tapGestureHandler(_ sender: Any) {
+		chatVC.view.endEditing(true)
 	}
 	
 	func scrollToBottom(animated: Bool = false, indexOffset: Int = 0) {
@@ -111,7 +124,7 @@ public class ChatCollectionViewController: UIViewController {
 	}
 	
 	func calculateImageContentSize(forMessage message: MessageProtocol) -> CGSize {
-		return CGSize(width: collectionView.frame.size.width, height: 300.0)
+		return CGSize(width: collectionView.frame.size.width, height: collectionView.frame.size.width*0.74)
 	}
 	
 }
@@ -158,14 +171,17 @@ extension ChatCollectionViewController: UICollectionViewDelegate, UICollectionVi
 	}
 	
 	public func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-		if !isLoadingNextPage && indexPath.row == 0 && hasMorePages && currentNumOfMessages > 0 {
+		if !isInitialLoad && !isLoadingNextPage && indexPath.row == 0 && hasMorePages && currentNumOfMessages > 0 {
 			isLoadingNextPage = true
 			let nextPageIndex = pageIndex+1
 			dataSource?.chat(loadNextPage: nextPageIndex, completion: { (loaded, isLastPage) in
 				DispatchQueue.main.async {
 					if loaded {
 						self.collectionView.reloadData()
-						self.collectionView.scrollToItem(at: IndexPath(row: self.lastPageSize, section: 0), at: .top, animated: false)
+						if self.collectionView.numberOfItems(inSection: 0) > self.lastPageSize {
+							let idx = IndexPath(row: self.lastPageSize, section: 0)
+							self.collectionView.scrollToItem(at: idx, at: .top, animated: false)
+						}
 					}
 					else {
 						self.collectionView.reloadData()
@@ -175,13 +191,16 @@ extension ChatCollectionViewController: UICollectionViewDelegate, UICollectionVi
 				}
 			})
 		}
-	}
-	
-	public func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-		if let cell = collectionView.cellForItem(at: indexPath) as? MessageCollectionViewCell {
-			delegate?.chat(collectionView, didSelect: cell.message)
+		if currentNumOfMessages > 0 {
+			isInitialLoad = false
 		}
 	}
+	
+//	public func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+//		if let cell = collectionView.cellForItem(at: indexPath) as? MessageCollectionViewCell {
+//			delegate?.chat(collectionView, didSelect: cell.message)
+//		}
+//	}
 	
 }
 

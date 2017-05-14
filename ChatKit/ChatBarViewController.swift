@@ -19,6 +19,7 @@ public class ChatBarViewController: UIViewController {
 	@IBOutlet weak var textViewContainer: UIView!
 	@IBOutlet weak var placeholderTextView: UITextView!
 	@IBOutlet weak var textViewHeightConstraint: NSLayoutConstraint!
+	@IBOutlet weak var actionButton: UIButton!
 	
 	weak var delegate: ChatDelegate!
 	weak var chatVC: ChatViewController!
@@ -38,6 +39,20 @@ public class ChatBarViewController: UIViewController {
 		else {
 			sendButton.setImage(nil, for: .normal)
 			sendButton.setTitle(barStyle.sendButtonText, for: .normal)
+		}
+		
+		if barStyle.actionButtonVisible {
+			if let img = barStyle.actionButtonImage {
+				actionButton.setImage(img, for: .normal)
+				actionButton.setTitle(nil, for: .normal)
+			}
+			else {
+				actionButton.setImage(nil, for: .normal)
+				actionButton.setTitle(barStyle.actionButtonText, for: .normal)
+			}
+		}
+		else {
+			actionButton.removeFromSuperview()
 		}
 		
 		textView.textContainerInset = .zero
@@ -62,12 +77,19 @@ public class ChatBarViewController: UIViewController {
 	public override func viewWillAppear(_ animated: Bool) {
 		super.viewWillAppear(animated)
 		textViewHeightConstraint.constant = textView.intrinsicContentSize.height
-//		chatVC.view.layoutIfNeeded()
 	}
 	
-//	public override func viewDidAppear(_ animated: Bool) {
-//		super.viewDidAppear(animated)
-//	}
+	func showKeyboard() {
+		if !textView.isFirstResponder {
+			textView.becomeFirstResponder()
+		}
+	}
+	
+	func hideKeyboard() {
+		if textView.isFirstResponder {
+			textView.resignFirstResponder()
+		}
+	}
 	
 	fileprivate func createMessage() -> MessageProtocol? {
 		guard let senderUser = ChatSettings.senderUser else { return nil }
@@ -133,6 +155,11 @@ extension ChatBarViewController {
 		updateTextViewHeight()
 		enableSendButtonIfNeeded()
 		delegate.chat(send: message)
+	}
+	
+	@IBAction func actionButtonHandler(_ sender: UIButton) {
+		print("ACTION BUTTTON TYPED")
+		delegate.chatDidSelectAction()
 	}
 	
 }

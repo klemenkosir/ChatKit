@@ -10,9 +10,10 @@ import UIKit
 
 public protocol ChatDelegate: class {
 	
-	func chat(_ chatCollectionView:  UICollectionView, didSelect message: MessageProtocol)
+	func chat(didSelectContent message: MessageProtocol)
 	func chat(didSelectAvatar message: MessageProtocol)
 	func chat(send message: MessageProtocol)
+	func chatDidSelectAction()
 	func chatIsConnected() -> Bool
 	
 }
