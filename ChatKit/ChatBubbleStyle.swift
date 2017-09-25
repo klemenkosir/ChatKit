@@ -26,6 +26,9 @@ public struct ChatBubbleStyle {
 	//text color
 	public var textColor: UIColor = .black
 	
+	//tint color
+	public var tintColor: UIColor = .black
+	
 	//background
 	public var bacgroundColor: UIColor = .white
 	

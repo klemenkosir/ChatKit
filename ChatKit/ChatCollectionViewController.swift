@@ -11,7 +11,7 @@ import UIKit
 public class ChatCollectionViewController: UIViewController {
 	
 	public static func viewController() -> ChatCollectionViewController {
-		return UIStoryboard(name: "ChatInterface", bundle: Bundle(identifier: "com.tovarnaidej.ChatKit")).instantiateViewController(withIdentifier: "chatCollectionViewController") as!  ChatCollectionViewController
+		return UIStoryboard(name: "ChatInterface", bundle: Bundle(identifier: "com.klemenkosir.ChatKit")).instantiateViewController(withIdentifier: "chatCollectionViewController") as!  ChatCollectionViewController
 	}
 	
 	static weak var instance: ChatCollectionViewController!
@@ -36,6 +36,10 @@ public class ChatCollectionViewController: UIViewController {
 		return dataSource?.hasLatestMessages == true
 	}
 	
+	fileprivate var reloadIndicator: UIActivityIndicatorView!
+	fileprivate var reloadLabel: UILabel!
+	
+	
 	override public func viewDidLoad() {
 		super.viewDidLoad()
 		ChatCollectionViewController.instance = self
@@ -47,6 +51,21 @@ public class ChatCollectionViewController: UIViewController {
 		self.collectionView.scrollsToTop = false
 		
 		self.collectionView.contentInset = UIEdgeInsetsMake(16.0, 0.0, 16.0, 0.0)
+		
+		reloadIndicator = UIActivityIndicatorView(activityIndicatorStyle: .gray)
+		reloadIndicator.startAnimating()
+		collectionView.addSubview(reloadIndicator)
+		
+		reloadLabel = UILabel()
+		reloadLabel.translatesAutoresizingMaskIntoConstraints = false
+		reloadLabel.text = "RELEASE TO RELOAD"
+		reloadLabel.font = UIFont.systemFont(ofSize: 9.0, weight: UIFontWeightLight)
+		reloadLabel.textColor = .gray
+		reloadLabel.alpha = 0.0
+		collectionView.addSubview(reloadLabel)
+		
+		reloadLabel.centerXAnchor.constraint(equalTo: reloadIndicator.centerXAnchor).isActive = true
+		reloadLabel.centerYAnchor.constraint(equalTo: reloadIndicator.centerYAnchor, constant: 30).isActive = true
 	}
 	
 	public override func viewDidAppear(_ animated: Bool) {
@@ -54,26 +73,34 @@ public class ChatCollectionViewController: UIViewController {
 //		isInitialLoad = false
 	}
 	
+	public override func viewWillLayoutSubviews() {
+		super.viewWillLayoutSubviews()
+		
+		let reloadIndicatorOffsetY = collectionView.contentSize.height >= collectionView.frame.size.height ? collectionView.contentSize.height : collectionView.frame.size.height
+		reloadIndicator?.frame = CGRect(x: 0.0, y: reloadIndicatorOffsetY, width: collectionView.frame.size.width, height: 100);
+	}
+	
 	@IBAction func tapGestureHandler(_ sender: Any) {
-		chatVC.view.endEditing(true)
+		chatVC.hideKeyboard()
 	}
 	
 	func scrollToBottom(animated: Bool = false, indexOffset: Int = 0) {
 		let numberOfItems = collectionView.numberOfItems(inSection: 0) + indexOffset
 		if numberOfItems > 0 {
 			DispatchQueue.main.async {
+				self.collectionView.contentInset = .zero
 				self.collectionView.scrollToItem(at: IndexPath(item: numberOfItems-1, section: 0), at: .bottom, animated: animated)
 			}
 		}
 	}
 	
-	func calculateContentSize(forMessage message: MessageProtocol) -> CGSize {
+	func calculateContentSize(forMessage message: MessageProtocol, at indexPath: IndexPath) -> CGSize {
 		switch message.content.contentType {
 		case .text:
 			let size = calculateTextContentSize(forMessage: message)
 			return CGSize(width: collectionView.frame.size.width, height: size.height)
 		case .image:
-			return calculateImageContentSize(forMessage: message)
+			return calculateImageContentSize(forMessage: message, at: indexPath)
 		case .video:
 			break
 		}
@@ -90,7 +117,7 @@ public class ChatCollectionViewController: UIViewController {
 			let timeContentRect = NSString(string: "0:00").boundingRect(with: CGSize(width: CGFloat.greatestFiniteMagnitude,
 			                                                                         height: CGFloat.greatestFiniteMagnitude),
 			                                                            options:  [.usesFontLeading, .usesLineFragmentOrigin],
-			                                                            attributes: [NSFontAttributeName : bubbleStyle.timeFont],
+			                                                            attributes: [NSFontAttributeName : bubbleStyle.timeFont ?? UIFont.systemFont(ofSize: 11.0)],
 			                                                            context: nil)
 			contentRect = contentRect.insetBy(dx: 0.0, dy: -(timeContentRect.size.height + 4.0)/2.0)
 		}
@@ -98,7 +125,7 @@ public class ChatCollectionViewController: UIViewController {
 		//add top and bottom inset
 		contentRect = contentRect.insetBy(dx: 0.0, dy: -16.0/2.0)
 		let size = CGSize(width: ceil(contentRect.size.width), height: ceil(contentRect.size.height))
-		//		print("CONTENT WIDTH: ",contentWidth, "; CONTENT SIZE: ",size,"; CONTENT TEXT: ",message.content.content as! String)
+//		print("; CONTENT SIZE: ",size,"; CONTENT TEXT: ",message.content.content as! String)
 		return size
 	}
 	
@@ -123,8 +150,36 @@ public class ChatCollectionViewController: UIViewController {
 		return contentRect
 	}
 	
-	func calculateImageContentSize(forMessage message: MessageProtocol) -> CGSize {
-		return CGSize(width: collectionView.frame.size.width, height: collectionView.frame.size.width*0.74)
+	func calculateImageContentSize(forMessage message: MessageProtocol, at indexPath: IndexPath) -> CGSize {
+		if let imageContent = message.content.content as? UIImage {
+			return CGSize(width: collectionView.frame.size.width, height: (collectionView.frame.size.width-105.0)*(imageContent.size.height/imageContent.size.width))
+		}
+		else {
+			message.content.contentUpdate = { [weak self] _ in
+				if self?.collectionView.indexPathsForVisibleItems.contains(indexPath) == true {
+					DispatchQueue.main.async {
+						self?.collectionView.reloadItems(at: [indexPath])
+					}
+				}
+			}
+			return CGSize(width: collectionView.frame.size.width, height: collectionView.frame.size.width*0.74)
+		}
+	}
+	
+	func triggerForceReload() {
+		collectionView.contentInset = UIEdgeInsetsMake(0.0, 0.0, 150.0, 0.0)
+		collectionView.contentOffset = CGPoint(x: 0.0, y: collectionView.contentOffset.y - 150.0)
+		
+		dataSource?.chatWantsReload() { (loaded, shouldReload) in
+			if loaded && shouldReload {
+				DispatchQueue.main.async {
+					self.collectionView.reloadData()
+				}
+			}
+			else {
+				//to do if reload fails
+			}
+		}
 	}
 	
 }
@@ -194,6 +249,8 @@ extension ChatCollectionViewController: UICollectionViewDelegate, UICollectionVi
 		if currentNumOfMessages > 0 {
 			isInitialLoad = false
 		}
+		
+		updateReloadIndicatorPosition()
 	}
 	
 //	public func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
@@ -201,6 +258,32 @@ extension ChatCollectionViewController: UICollectionViewDelegate, UICollectionVi
 //			delegate?.chat(collectionView, didSelect: cell.message)
 //		}
 //	}
+	
+	public func scrollViewDidScroll(_ scrollView: UIScrollView) {
+		let yOffset = scrollView.contentOffset.y
+		if yOffset > scrollView.contentSize.height-scrollView.frame.size.height {
+			let maxOffset = scrollView.contentSize.height-scrollView.frame.size.height + 150
+			let opacity = 1.0 - (maxOffset - yOffset)/50.0
+			print("opacity: ",opacity)
+			reloadLabel?.alpha = opacity
+		}
+		else {
+			reloadLabel?.alpha = 0.0
+		}
+		updateReloadIndicatorPosition()
+	}
+	
+	public func scrollViewWillEndDragging(_ scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
+		let reloadIndicatorOffsetY = collectionView.contentSize.height >= collectionView.frame.size.height ? collectionView.contentSize.height : collectionView.frame.size.height
+		if scrollView.contentOffset.y > reloadIndicatorOffsetY-scrollView.frame.size.height + 150 {
+			triggerForceReload()
+		}
+	}
+	
+	func updateReloadIndicatorPosition() {
+		let reloadIndicatorOffsetY = collectionView.contentSize.height >= collectionView.frame.size.height ? collectionView.contentSize.height : collectionView.frame.size.height
+		reloadIndicator?.frame = CGRect(x: 0.0, y: reloadIndicatorOffsetY, width: collectionView.frame.size.width, height: 100);
+	}
 	
 }
 
@@ -227,8 +310,10 @@ extension ChatCollectionViewController: UICollectionViewDelegateFlowLayout {
 		if (hasMorePages && indexPath.row == 0) || (!hasLatestMessages && indexPath.row+1 == collectionView.numberOfItems(inSection: 0)) {
 			return CGSize(width: collectionView.frame.size.width, height: 60.0)
 		}
-		if let message = dataSource?.chat(collectionView, messageForIndexPath: IndexPath(row: indexPath.row-(hasMorePages ? 1 : 0), section: indexPath.section)) {
-			let cellSize = calculateContentSize(forMessage: message)
+		let row = indexPath.row-(hasMorePages ? 1 : 0)
+		if let ds = dataSource, ds.numberOfMessages(collectionView) > row {
+			let message = ds.chat(collectionView, messageForIndexPath: IndexPath(row: row, section: indexPath.section))
+			let cellSize = calculateContentSize(forMessage: message, at: indexPath)
 			return cellSize
 		}
 		return .zero

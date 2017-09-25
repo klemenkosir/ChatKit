@@ -10,10 +10,12 @@ import UIKit
 
 public protocol ChatDataSource: class {
 	
+	var hasLatestMessages: Bool { get }
+	var hasMorePages: Bool { get }
+	
 	func numberOfMessages(_ chatCollectionView: UICollectionView) -> Int
 	func chat(_ chatCollectionView: UICollectionView, messageForIndexPath indexPath: IndexPath) -> MessageProtocol
 	func chat(loadNextPage pageIndex: Int, completion: @escaping (_ loaded: Bool, _ isLastPage: Bool) -> Void)
-	var hasLatestMessages: Bool { get }
-	var hasMorePages: Bool { get }
+	func chatWantsReload(_ completion: @escaping (_ loaded: Bool, _ shouldReload: Bool) -> Void) //call completion if you want the chat to reload automaticaly aka no need to call reloadChat
 	
 }

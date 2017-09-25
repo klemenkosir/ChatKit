@@ -14,6 +14,7 @@ public typealias UserImageUpdateBlock = ((_ newImage: UIImage?) -> Void)
 public protocol MessageProtocol: class {
 	var user: MessageUserProtocol { get set }
 	var content: MessageContentProtocol { get set }
+	var subject: String? { get set }
 	var date: Date { get }
 	var isSystem: Bool { get }
 }

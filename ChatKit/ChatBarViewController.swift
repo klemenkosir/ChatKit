@@ -11,7 +11,7 @@ import UIKit
 public class ChatBarViewController: UIViewController {
 
 	public static func viewController() -> ChatBarViewController {
-		return UIStoryboard(name: "ChatInterface", bundle: Bundle(identifier: "com.tovarnaidej.ChatKit")).instantiateViewController(withIdentifier: "chatBarViewController") as!  ChatBarViewController
+		return UIStoryboard(name: "ChatInterface", bundle: Bundle(identifier: "com.klemenkosir.ChatKit")).instantiateViewController(withIdentifier: "chatBarViewController") as!  ChatBarViewController
 	}
 	
 	@IBOutlet weak var sendButton: UIButton!
@@ -20,8 +20,9 @@ public class ChatBarViewController: UIViewController {
 	@IBOutlet weak var placeholderTextView: UITextView!
 	@IBOutlet weak var textViewHeightConstraint: NSLayoutConstraint!
 	@IBOutlet weak var actionButton: UIButton!
+	@IBOutlet weak var textViewBackground: UIView!
 	
-	weak var delegate: ChatDelegate!
+	weak var delegate: ChatDelegate?
 	weak var chatVC: ChatViewController!
 	
     override public func viewDidLoad() {
@@ -57,9 +58,10 @@ public class ChatBarViewController: UIViewController {
 		
 		textView.textContainerInset = .zero
 		textView.contentInset = .zero
-		textView.autocorrectionType = .no
-		textView.textContainer.lineBreakMode = .byWordWrapping
+		textView.autocorrectionType = .default
+		textView.textContainer.lineBreakMode = .byCharWrapping
 		placeholderTextView.textContainerInset = .zero
+		placeholderTextView.text = barStyle.placeholderText
 		
 		sendButton.isUserInteractionEnabled = false
 		if let img = barStyle.sendButtonImageDisabled {
@@ -69,6 +71,13 @@ public class ChatBarViewController: UIViewController {
 		else {
 			sendButton.alpha = 0.3
 		}
+		
+		let textViewStyle = barStyle.textViewStyle
+		
+		textViewBackground.borderColor = textViewStyle.borderColor
+		textViewBackground.borderWidth = textViewStyle.borderWidth
+		textViewBackground.cornerRadius = textViewStyle.cornerRadius
+		textViewBackground.backgroundColor = textViewStyle.backgroundColor
 		
 		let tap = UITapGestureRecognizer(target: self, action: #selector(textViewContainerHandler(_:)))
 		textViewContainer.addGestureRecognizer(tap)
@@ -89,6 +98,7 @@ public class ChatBarViewController: UIViewController {
 		if textView.isFirstResponder {
 			textView.resignFirstResponder()
 		}
+		self.chatVC.collectionVC.updateReloadIndicatorPosition()
 	}
 	
 	fileprivate func createMessage() -> MessageProtocol? {
@@ -126,8 +136,14 @@ public class ChatBarViewController: UIViewController {
 	
 	fileprivate func updateTextViewHeight() {
 		let textHeight = textView.textContentSize.height
+		let textWidth = textView.textContentSize.width
 		let placeholderHeight = placeholderTextView.textContentSize.height
 		var newHeight = textHeight + 2.0
+		
+//		if textWidth > textView.contentSize.width {
+//			newHeight = newHeight * 2.0
+//		}
+		
 		if newHeight > 120.0 {
 			newHeight = 120.0
 		}
@@ -154,12 +170,12 @@ extension ChatBarViewController {
 		showPlaceholderIfNeeded()
 		updateTextViewHeight()
 		enableSendButtonIfNeeded()
-		delegate.chat(send: message)
+		delegate?.chat(send: message)
 	}
 	
 	@IBAction func actionButtonHandler(_ sender: UIButton) {
 		print("ACTION BUTTTON TYPED")
-		delegate.chatDidSelectAction()
+		delegate?.chatDidSelectAction()
 	}
 	
 }
@@ -184,7 +200,7 @@ extension ChatBarViewController: UITextViewDelegate {
 	
 	
 	public func textViewShouldBeginEditing(_ textView: UITextView) -> Bool {
-		return delegate.chatIsConnected()
+		return delegate?.chatIsConnected() ?? true
 	}
 	
 	public func textViewDidBeginEditing(_ textView: UITextView) {

@@ -76,7 +76,9 @@ class MessageCollectionViewCell: MessageCell {
 		self.contentView.backgroundColor = ChatSettings.backgroundColor
 		messageContentView.backgroundColor = ChatSettings.backgroundColor
 		
-		createBubbleTail()
+		if bubbleStyle.hasBubbleTail {
+			createBubbleTail()
+		}
 		
 		self.layer.rasterizationScale = UIScreen.main.nativeScale
 		self.layer.shouldRasterize = true
@@ -177,7 +179,7 @@ class MessageCollectionViewCell: MessageCell {
 			textView.showsHorizontalScrollIndicator = false
 			textView.isEditable = false
 			textView.dataDetectorTypes = .all
-//			textView.tintColor = bubbleStyle.textColor
+			textView.tintColor = bubbleStyle.tintColor
 			self.bubbleView.addSubview(textView)
 			
 			//constraints
@@ -207,6 +209,7 @@ class MessageCollectionViewCell: MessageCell {
 				activityIndicator.startAnimating()
 			}
 			else {
+				imageView.image = nil
 				let activityIndicator = UIActivityIndicatorView(activityIndicatorStyle: .gray)
 				activityIndicator.startAnimating()
 				activityIndicator.tag = 3

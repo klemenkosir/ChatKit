@@ -14,6 +14,7 @@ class Message: MessageProtocol {
 	var content: MessageContentProtocol
 	var date: Date = Date()
 	var isSystem: Bool = false
+	var subject: String? = nil
 	
 	init(_ user: MessageUserProtocol, _ content: MessageContentProtocol) {
 		self.user = user

@@ -11,8 +11,10 @@ import UIKit
 public class ChatViewController: UIViewController {
 
 	public static func viewController() -> ChatViewController {
-		return UIStoryboard(name: "ChatInterface", bundle: Bundle(identifier: "com.tovarnaidej.ChatKit")).instantiateViewController(withIdentifier: "chatViewController") as!  ChatViewController
+		return UIStoryboard(name: "ChatInterface", bundle: Bundle(identifier: "com.klemenkosir.ChatKit")).instantiateViewController(withIdentifier: "chatViewController") as!  ChatViewController
 	}
+	
+	public static weak var currentInstance: ChatViewController?
 	
 	@IBOutlet weak var collectionViewContainer: UIView!
 	@IBOutlet weak var chatBarContainer: UIView!
@@ -41,6 +43,8 @@ public class ChatViewController: UIViewController {
     override public func viewDidLoad() {
         super.viewDidLoad()
 		
+		ChatViewController.currentInstance = self
+		
 		NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(_:)), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
 		NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(_:)), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
 		NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillChangeFrame(_:)), name: NSNotification.Name.UIKeyboardWillChangeFrame, object: nil)
@@ -52,12 +56,20 @@ public class ChatViewController: UIViewController {
 		
 		collectionVC.chatVC = self
 		chatBarVC.chatVC = self
-		
-		chatBarContainer.isUserInteractionEnabled = !ChatSettings.disableInput
     }
 	
 	public override func viewWillAppear(_ animated: Bool) {
 		super.viewWillAppear(animated)
+		
+		chatBarContainer.isUserInteractionEnabled = !ChatSettings.disableInput
+		
+		let barStyle = ChatSettings.chatBarStyle
+		chatBarContainer.shadowRadius = barStyle.shadowRadius
+		chatBarContainer.shadowOpacity = Float(barStyle.shadowOpacity)
+		chatBarContainer.shadowOffset = barStyle.shadowOffset
+		chatBarContainer.shadowColor = barStyle.shadowColor
+		chatBarContainer.backgroundColor = barStyle.backgroundColor
+		
 		if isInitialLoad {
 			self.collectionVC.scrollToBottom()
 		}

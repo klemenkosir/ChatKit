@@ -11,6 +11,14 @@ import Foundation
 
 public struct ChatBarStyle {
 	
+	public struct TextViewStyle {
+		public var backgroundColor: UIColor = .white
+		
+		public var cornerRadius: CGFloat = 0.0
+		public var borderWidth: CGFloat = 0.0
+		public var borderColor: UIColor = .clear
+	}
+	
 	//shadow
 	public var shadowOffset: CGSize = .zero
 	public var shadowOpacity: CGFloat = 0.0
@@ -36,6 +44,9 @@ public struct ChatBarStyle {
 	public var actionButtonImage: UIImage?
 	public var actionButtonImageDisabled: UIImage?
 	public var actionButtonText: String = "ACT"
+	
+	//textview
+	public var textViewStyle: TextViewStyle = TextViewStyle()
 	
 	public init() {}
 	
